@@ -18,6 +18,14 @@ class HelpdeskTeam(models.Model):
         string='Sub Teams',
     )
 
+    team_members = fields.Many2many(
+        'res.users',
+        relation='helpdesk_team_members_rel',
+        column1='team_id',
+        column2='user_id',
+        string='Team Members',
+    )
+
     @api.constrains('parent_id')
     def _check_parent_id(self):
         for team in self:

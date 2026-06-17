@@ -7,9 +7,11 @@
         <field name="inherit_id" ref="helpdesk.helpdesk_team_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']" position="after">
-                <field name="parent_id" options="{'no_create': True}"/>
+                <field name="parent_id" options="{'no_create': True}" domain="[('id', '!=', id)]"/>
                 <field name="child_ids" widget="many2many_tags" readonly="1"/>
+                <field name="team_members" widget="many2many_tags"/>
             </xpath>
+
         </field>
     </record>
 
@@ -20,7 +22,7 @@
             <hierarchy child_field="child_ids" draggable="1">
 
                 <field name="name"/>
-                <field name="member_ids"/>
+                <field name="team_members"/>
                 <field name="parent_id"/>
                 <field name="child_ids"/>
 
@@ -69,23 +71,23 @@
                                 <span style="font-size:10px; color:#888; font-weight:600; letter-spacing:0.4px;">
                                     MEMBERS
                                 </span>
-                                <t t-if="record.member_ids and record.member_ids.length">
+                                <t t-if="record.team_members and record.team_members.length">
                                     <span style="font-size:10px; background:#EEEDFE; color:#3C3489; border:0.5px solid #AFA9EC; border-radius:20px; padding:1px 7px;">
-                                        <t t-esc="record.member_ids.length"/>
+                                        <t t-esc="record.team_members.length"/>
                                     </span>
                                 </t>
                             </div>
 
                             <div class="d-flex align-items-center" style="gap:3px;">
-                                <t t-if="record.member_ids and record.member_ids.length">
-                                    <t t-foreach="record.member_ids.slice(0, 5)" t-as="memberId">
+                                <t t-if="record.team_members and record.team_members.length">
+                                    <t t-foreach="record.team_members.slice(0, 5)" t-as="memberId">
                                         <img t-att-src="'/web/image/res.users/' + memberId + '/avatar_128'"
                                              style="width:26px; height:26px; border-radius:50%; border:1.5px solid #AFA9EC; object-fit:cover; background:#EEEDFE;"/>
                                     </t>
-                                    <t t-if="record.member_ids.length > 5">
+                                    <t t-if="record.team_members.length > 5">
                                         <span class="d-flex align-items-center justify-content-center fw-semibold"
                                               style="width:26px; height:26px; border-radius:50%; background:#534AB7; color:#fff; font-size:9px; border:1.5px solid #AFA9EC;">
-                                            +<t t-esc="record.member_ids.length - 5"/>
+                                            +<t t-esc="record.team_members.length - 5"/>
                                         </span>
                                     </t>
                                 </t>
