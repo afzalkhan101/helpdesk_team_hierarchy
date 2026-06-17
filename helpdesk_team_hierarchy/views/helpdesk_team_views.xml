@@ -1,30 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-  
-     <!-- Add Members to Teams for Hierarchy View  -->
-    <!-- <record id="helpdesk_team_hierarchy_form" model="ir.ui.view">
-        <field name="name">helpdesk.team.hierarchy.form</field>
-        <field name="model">helpdesk.team</field>
-        <field name="inherit_id" ref="helpdesk.helpdesk_team_view_form"/>
-        <field name="arch" type="xml">
-
-            <xpath expr="//field[@name='description']" position="after">
-                <field name="parent_id"
-                       placeholder="Select Parent Team"/>
-                <field name="child_ids" invisible="1"/>
-            </xpath>
-
-            <xpath expr="//field[@name='member_ids']" position="after">
-                <field name="child_ids"
-                       string="Sub Teams"
-                       widget="many2many_tags"/>
-            </xpath>
-        </field>
-    </record> -->
-
-
-
-
 
     <record id="helpdesk_team_view_hierarchy" model="ir.ui.view">
         <field name="name">helpdesk.team.view.hierarchy</field>
@@ -40,8 +15,10 @@
                 <templates>
                     <t t-name="hierarchy-box">
 
+                        <!-- Top Color Bar -->
                         <div style="height:4px; background:#534AB7; border-radius:8px 8px 0 0;"/>
 
+                        <!-- Header: Parent Info + Child Count -->
                         <div class="o_hierarchy_node_header d-flex align-items-center justify-content-between px-2 py-2"
                              style="background:#f9f9ff; border-bottom:1px solid #e8e6fc;">
                             <div class="d-flex align-items-center gap-2" style="min-width:0;">
@@ -51,9 +28,9 @@
                                 </span>
                                 <span class="fw-semibold text-truncate"
                                       style="font-size:11px; color:#534AB7; max-width:90px;"
-                                      t-esc="record.parent_id.name or 'Root'"/>
+                                      t-esc="record.parent_id ? record.parent_id[1] : 'Root'"/>
                             </div>
-                            <t t-if="record.child_ids.length">
+                            <t t-if="record.child_ids and record.child_ids.length">
                                 <span class="fw-semibold"
                                       style="font-size:10px; background:#EEEDFE; color:#3C3489; border:0.5px solid #AFA9EC; border-radius:20px; padding:2px 8px; white-space:nowrap;">
                                     <i class="fa fa-code-fork" style="font-size:9px; margin-right:2px;"/>
@@ -64,6 +41,7 @@
                             </t>
                         </div>
 
+                        <!-- Body: Team Icon + Name -->
                         <div class="o_hierarchy_node_body d-flex flex-column align-items-center text-center px-3 pt-3 pb-2 gap-2">
                             <span class="d-flex align-items-center justify-content-center flex-shrink-0"
                                   style="width:38px; height:38px; border-radius:10px; background:#EEEDFE; color:#534AB7;">
@@ -74,19 +52,45 @@
                                   t-esc="record.name"/>
                         </div>
 
+                        <!-- Divider -->
                         <div style="height:0.5px; background:#e8e6fc; margin:0 10px;"/>
 
-                        <div class="d-flex align-items-center justify-content-center px-2 py-2">
-                            <button type="button"
-                                    class="o_hd_member_btn fw-semibold"
-                                    style="font-size:10px; background:#EEEDFE; color:#3C3489; border:0.5px solid #AFA9EC; border-radius:20px; padding:3px 12px; cursor:pointer;"
-                                    t-att-data-team-id="record.id"
-                                    t-att-data-count="record.member_ids.length">
-                                <i class="fa fa-users" style="font-size:10px; margin-right:4px;"/>
-                                <t t-esc="record.member_ids.length"/>
-                                <t t-if="record.member_ids.length == 1"> Member</t>
-                                <t t-else=""> Members</t>
-                            </button>
+                        <!-- Members Section -->
+                        <div class="d-flex flex-column px-2 py-2 gap-1">
+
+                            <!-- Label + Count -->
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span style="font-size:10px; color:#888; font-weight:600; letter-spacing:0.4px;">
+                                    MEMBERS
+                                </span>
+                                <t t-if="record.member_ids and record.member_ids.length">
+                                    <span style="font-size:10px; background:#EEEDFE; color:#3C3489; border:0.5px solid #AFA9EC; border-radius:20px; padding:1px 7px;">
+                                        <t t-esc="record.member_ids.length"/>
+                                    </span>
+                                </t>
+                            </div>
+
+                            <!-- Member IDs as Avatars -->
+                            <div class="d-flex align-items-center" style="gap:3px;">
+                                <t t-if="record.member_ids and record.member_ids.length">
+                                    <t t-foreach="record.member_ids.slice(0, 5)" t-as="memberId">
+                                        <img t-att-src="'/web/image/res.users/' + memberId + '/avatar_128'"
+                                             style="width:26px; height:26px; border-radius:50%; border:1.5px solid #AFA9EC; object-fit:cover; background:#EEEDFE;"/>
+                                    </t>
+                                    <t t-if="record.member_ids.length > 5">
+                                        <span class="d-flex align-items-center justify-content-center fw-semibold"
+                                              style="width:26px; height:26px; border-radius:50%; background:#534AB7; color:#fff; font-size:9px; border:1.5px solid #AFA9EC;">
+                                            +<t t-esc="record.member_ids.length - 5"/>
+                                        </span>
+                                    </t>
+                                </t>
+                                <t t-else="">
+                                    <span style="font-size:10px; color:#aaa; font-style:italic;">
+                                        No members assigned
+                                    </span>
+                                </t>
+                            </div>
+
                         </div>
 
                     </t>
