@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  
+     <!-- Add Members to Teams for Hierarchy View  -->
+    <!-- <record id="helpdesk_team_hierarchy_form" model="ir.ui.view">
+        <field name="name">helpdesk.team.hierarchy.form</field>
+        <field name="model">helpdesk.team</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_team_view_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='description']" position="after">
+                <field name="parent_id"
+                       placeholder="Select Parent Team"/>
+                <field name="child_ids" invisible="1"/>
+            </xpath>
+
+            <xpath expr="//field[@name='member_ids']" position="after">
+                <field name="child_ids"
+                       string="Sub Teams"
+                       widget="many2many_tags"/>
+            </xpath>
+        </field>
+    </record> -->
+
+
+
+
+
+    <record id="helpdesk_team_view_hierarchy" model="ir.ui.view">
+        <field name="name">helpdesk.team.view.hierarchy</field>
+        <field name="model">helpdesk.team</field>
+        <field name="arch" type="xml">
+            <hierarchy child_field="child_ids" draggable="1">
+
+                <field name="name"/>
+                <field name="member_ids"/>
+                <field name="parent_id"/>
+                <field name="child_ids"/>
+
+                <templates>
+                    <t t-name="hierarchy-box">
+
+                        <div style="height:4px; background:#534AB7; border-radius:8px 8px 0 0;"/>
+
+                        <div class="o_hierarchy_node_header d-flex align-items-center justify-content-between px-2 py-2"
+                             style="background:#f9f9ff; border-bottom:1px solid #e8e6fc;">
+                            <div class="d-flex align-items-center gap-2" style="min-width:0;">
+                                <span class="d-flex align-items-center justify-content-center flex-shrink-0"
+                                      style="width:20px; height:20px; border-radius:6px; background:#EEEDFE; color:#534AB7;">
+                                    <i class="fa fa-sitemap" style="font-size:10px;"/>
+                                </span>
+                                <span class="fw-semibold text-truncate"
+                                      style="font-size:11px; color:#534AB7; max-width:90px;"
+                                      t-esc="record.parent_id.name or 'Root'"/>
+                            </div>
+                            <t t-if="record.child_ids.length">
+                                <span class="fw-semibold"
+                                      style="font-size:10px; background:#EEEDFE; color:#3C3489; border:0.5px solid #AFA9EC; border-radius:20px; padding:2px 8px; white-space:nowrap;">
+                                    <i class="fa fa-code-fork" style="font-size:9px; margin-right:2px;"/>
+                                    <t t-esc="record.child_ids.length"/>
+                                    <t t-if="record.child_ids.length == 1"> team</t>
+                                    <t t-else=""> teams</t>
+                                </span>
+                            </t>
+                        </div>
+
+                        <div class="o_hierarchy_node_body d-flex flex-column align-items-center text-center px-3 pt-3 pb-2 gap-2">
+                            <span class="d-flex align-items-center justify-content-center flex-shrink-0"
+                                  style="width:38px; height:38px; border-radius:10px; background:#EEEDFE; color:#534AB7;">
+                                <i class="fa fa-users" style="font-size:17px;"/>
+                            </span>
+                            <span class="fw-semibold text-truncate"
+                                  style="font-size:13px; color:#1a1a2e; max-width:148px;"
+                                  t-esc="record.name"/>
+                        </div>
+
+                        <div style="height:0.5px; background:#e8e6fc; margin:0 10px;"/>
+
+                        <div class="d-flex align-items-center justify-content-center px-2 py-2">
+                            <button type="button"
+                                    class="o_hd_member_btn fw-semibold"
+                                    style="font-size:10px; background:#EEEDFE; color:#3C3489; border:0.5px solid #AFA9EC; border-radius:20px; padding:3px 12px; cursor:pointer;"
+                                    t-att-data-team-id="record.id"
+                                    t-att-data-count="record.member_ids.length">
+                                <i class="fa fa-users" style="font-size:10px; margin-right:4px;"/>
+                                <t t-esc="record.member_ids.length"/>
+                                <t t-if="record.member_ids.length == 1"> Member</t>
+                                <t t-else=""> Members</t>
+                            </button>
+                        </div>
+
+                    </t>
+                </templates>
+            </hierarchy>
+        </field>
+    </record>
+
+
+    <record id="helpdesk_team_action_hierarchy" model="ir.actions.act_window">
+        <field name="name">Team Hierarchy</field>
+        <field name="res_model">helpdesk.team</field>
+        <field name="view_mode">hierarchy,list,form</field>
+        <field name="view_ids" eval="[
+            (5, 0, 0),
+            (0, 0, {'view_mode': 'hierarchy', 'view_id': ref('helpdesk_team_view_hierarchy')}),
+        ]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No helpdesk teams yet!</p>
+            <p>Create your first team and assign sub-teams to build your support hierarchy.</p>
+        </field>
+    </record>
+
+
+    <menuitem
+        id="menu_helpdesk_team_hierarchy"
+        name="Team Hierarchy"
+        parent="helpdesk.helpdesk_menu_config"
+        action="helpdesk_team_action_hierarchy"
+        sequence="100"/>
+
+</odoo>
