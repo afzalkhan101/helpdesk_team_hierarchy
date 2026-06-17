@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <record id="helpdesk_team_form_view_inherit" model="ir.ui.view">
+        <field name="name">helpdesk.team.form.inherit.hierarchy</field>
+        <field name="model">helpdesk.team</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_team_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="parent_id" options="{'no_create': True}"/>
+                <field name="child_ids" widget="many2many_tags" readonly="1"/>
+            </xpath>
+        </field>
+    </record>
+
     <record id="helpdesk_team_view_hierarchy" model="ir.ui.view">
         <field name="name">helpdesk.team.view.hierarchy</field>
         <field name="model">helpdesk.team</field>
@@ -14,11 +26,8 @@
 
                 <templates>
                     <t t-name="hierarchy-box">
-
-                        <!-- Top Color Bar -->
                         <div style="height:4px; background:#534AB7; border-radius:8px 8px 0 0;"/>
 
-                        <!-- Header: Parent Info + Child Count -->
                         <div class="o_hierarchy_node_header d-flex align-items-center justify-content-between px-2 py-2"
                              style="background:#f9f9ff; border-bottom:1px solid #e8e6fc;">
                             <div class="d-flex align-items-center gap-2" style="min-width:0;">
@@ -41,7 +50,6 @@
                             </t>
                         </div>
 
-                        <!-- Body: Team Icon + Name -->
                         <div class="o_hierarchy_node_body d-flex flex-column align-items-center text-center px-3 pt-3 pb-2 gap-2">
                             <span class="d-flex align-items-center justify-content-center flex-shrink-0"
                                   style="width:38px; height:38px; border-radius:10px; background:#EEEDFE; color:#534AB7;">
@@ -52,13 +60,11 @@
                                   t-esc="record.name"/>
                         </div>
 
-                        <!-- Divider -->
                         <div style="height:0.5px; background:#e8e6fc; margin:0 10px;"/>
 
-                        <!-- Members Section -->
                         <div class="d-flex flex-column px-2 py-2 gap-1">
 
-                            <!-- Label + Count -->
+                      
                             <div class="d-flex align-items-center justify-content-between">
                                 <span style="font-size:10px; color:#888; font-weight:600; letter-spacing:0.4px;">
                                     MEMBERS
@@ -70,7 +76,6 @@
                                 </t>
                             </div>
 
-                            <!-- Member IDs as Avatars -->
                             <div class="d-flex align-items-center" style="gap:3px;">
                                 <t t-if="record.member_ids and record.member_ids.length">
                                     <t t-foreach="record.member_ids.slice(0, 5)" t-as="memberId">
@@ -90,20 +95,18 @@
                                     </span>
                                 </t>
                             </div>
-
                         </div>
-
                     </t>
                 </templates>
             </hierarchy>
         </field>
     </record>
 
-
+ 
     <record id="helpdesk_team_action_hierarchy" model="ir.actions.act_window">
         <field name="name">Team Hierarchy</field>
         <field name="res_model">helpdesk.team</field>
-        <field name="view_mode">hierarchy,list,form</field>
+        <field name="view_mode">hierarchy,form</field>
         <field name="view_ids" eval="[
             (5, 0, 0),
             (0, 0, {'view_mode': 'hierarchy', 'view_id': ref('helpdesk_team_view_hierarchy')}),
@@ -113,7 +116,6 @@
             <p>Create your first team and assign sub-teams to build your support hierarchy.</p>
         </field>
     </record>
-
 
     <menuitem
         id="menu_helpdesk_team_hierarchy"

@@ -18,25 +18,15 @@ class HelpdeskTeam(models.Model):
         string='Sub Teams',
     )
 
-    member_ids = fields.Many2many(
-        'res.users',
-        'helpdesk_team_member_rel',
-        'team_id',
-        'user_id',
-        string='Team Members',
-    )
-
     @api.constrains('parent_id')
     def _check_parent_id(self):
         for team in self:
             if not team.parent_id:
                 continue
-
             if team.parent_id == team:
                 raise ValidationError(
                     f"Team '{team.name}' cannot be its own parent."
                 )
-
             if team._has_cycle():
                 raise ValidationError(
                     f"Circular hierarchy detected for team '{team.name}'."
@@ -46,12 +36,9 @@ class HelpdeskTeam(models.Model):
         self.ensure_one()
         visited = set()
         node = self.parent_id
-
         while node:
             if node.id in visited or node.id == self.id:
                 return True
-
             visited.add(node.id)
             node = node.parent_id
-
         return False
